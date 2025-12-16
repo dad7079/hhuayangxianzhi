@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Routes, Route, Link, useParams, Navigate, useNavigate } from 'react-router-dom';
-import { Layout } from './Layout';
+import { Layout } from './components/Layout';
 import { Volume, ContentType } from './types';
-import { generateAssistantContent } from './geminiService';
+import { generateAssistantContent } from './services/geminiService';
 
 // --- MOCK DATA GENERATOR ---
 const INITIAL_VOLUMES: Volume[] = Array.from({ length: 44 }, (_, i) => ({
