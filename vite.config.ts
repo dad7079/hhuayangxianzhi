@@ -6,7 +6,5 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  define: {
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
-  }
+  // Removed process.env.API_KEY definition for standalone mode
 });

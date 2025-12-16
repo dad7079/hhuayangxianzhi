@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { HashRouter, Routes, Route, Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Volume, ContentType } from './types';
-import { generateAssistantContent } from './services/geminiService';
 
 // --- MOCK DATA GENERATOR ---
 const INITIAL_VOLUMES: Volume[] = Array.from({ length: 44 }, (_, i) => ({
@@ -233,7 +232,6 @@ const AdminDashboard = ({ volumes, onUpdate }: { volumes: Volume[], onUpdate: (v
   const [editTab, setEditTab] = useState<ContentType>('original');
   const [content, setContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [isAiLoading, setIsAiLoading] = useState(false);
 
   const activeVol = volumes.find(v => v.id === selectedId);
 
@@ -247,29 +245,6 @@ const AdminDashboard = ({ volumes, onUpdate }: { volumes: Volume[], onUpdate: (v
     const updated = { ...activeVol, [editTab]: content };
     onUpdate(updated);
     setTimeout(() => setIsSaving(false), 500); // Fake delay for UX
-  };
-
-  const handleAiAssist = async () => {
-    if (!activeVol || !activeVol.original) {
-        alert("请先确保“原文”内容不为空");
-        return;
-    }
-    if (editTab === 'original') {
-        alert("AI助手只能用于生成注释或译文");
-        return;
-    }
-
-    if (!window.confirm("确定要使用 Gemini AI 自动生成内容吗？这将覆盖当前编辑框的内容。")) return;
-
-    setIsAiLoading(true);
-    try {
-        const generated = await generateAssistantContent(activeVol.original, editTab);
-        setContent(generated);
-    } catch (e: any) {
-        alert(e.message);
-    } finally {
-        setIsAiLoading(false);
-    }
   };
 
   return (
@@ -295,15 +270,6 @@ const AdminDashboard = ({ volumes, onUpdate }: { volumes: Volume[], onUpdate: (v
         <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-calligraphy">{activeVol?.title} - 编辑</h2>
             <div className="flex gap-2">
-                 {editTab !== 'original' && (
-                    <button 
-                        onClick={handleAiAssist}
-                        disabled={isAiLoading}
-                        className={`px-3 py-1 bg-purple-700 text-white text-sm rounded hover:opacity-90 flex items-center gap-1 ${isAiLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        {isAiLoading ? '生成中...' : '✨ AI 生成'}
-                    </button>
-                 )}
                 <button 
                   onClick={handleSave}
                   className="px-4 py-1 bg-seal text-white rounded hover:bg-red-800 transition-colors shadow-sm"
